@@ -1,108 +1,87 @@
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
-IL completez mai tarziu
+!DISCLAIMER: am folosit structurile de date implementate in cadrul laboratorului, pe care le-am mai si modificat pe alocuri.
 
+!DISCLAIMER: am folosit variabile statice in 2 locuri pt popularea hashtable urilor de vizitare intrucat la un moment dat aveam un bug de la liste care manca mult timp si am incercat metode neortodoxe de eficientizare pana cand am gasit bug ul.
+
+2 tipuri de Hashtable:
+	-struct Hashtable: este un Hashtable direct chaining menit sa trateze coliziunile cu red black tree in loc de liste inlantuite.
+	-strct HashtableS: Hashtable-ul normal din laborator
+
+Retinerea datelor:
+	-datele se retin intr o structura Article. Pentru accesarea lor folosesc Hashtable art_id cu red black pe id, care tine pointer la articol.
+	-retin forma grafului INVERSAT prin Hashtable ul cu red black care tine pe id1 o lista inlantuita cu id urile articolelor care au citat id1 - referenced_by
+	-cu ajoturul size ului lui referenced_by, vom putea afla mereu de cate ori un articol a fost citat.
+
+-----------------------------------------------------------------------
+GET_OLDEST_INFLUENCE:
+	Initial rezolvarea consta intr-un BFS in care ne duceam orbeste in toate referintele si tot asa. Gandindu-ne totusi la practica, am ales sa preprocesam astfel:
+		- fiecare paper va afea o informatie in plus, oldest_influence, in care retinem la momentul curent id-ul paper-ului cel mai vechi.
+		- in momentul in care adaugam un articol nou, mergem pe graful INVERSAT ~daca este cazul~ si actualizam oldest influence ul.
+		- in momentul in care un articol e citat de alt articol, inseamna ca numarul sau de citatii a crescut, deci trebuie sa verificam daca putem updata pe graful sau inversat
+	Functia care se ocupa de updatat este update, prin care se parcurge cu ajutorul lui referenced_by graful inversat pornind dintr un id dat. Algoritm de tip BFS.
+
+	DE CE ? 
+		- Trade off ul se merita intrucat avem O(1) pe querry ul de get_oldest influence
+		- Nu ne ducem orbeste, alegem sa updatam doar cand avem solutii mai bune.
+
+-----------------------------------------------------------------------
+GET_VENUE_IMPACT factor:
+	Pentru acest task retinem intr un Hashtable cu rbt cu cheia numele venue, o structura de tip impact, care retine numarul total de citatii ale venue ului respectiv si numarul total de paper-uri. Update ul acestui Hashtable se face in add_paper. Obtinem complexitate O(1) pe querry.
+
+----------------------------------------------------------------------------
+GET_NUMBER_OF_INFLUENCED_PAPERS:
+	La acest task putem spune ca am experimentat putin.
+	Am optat pentru un algoritm BFS pe graful inversat.
+	Ceea ce este interesant este ca pentru a marca drumul parcurs nu am folosit Hashtable, ci Hashmap: un red black tree ce retine o pereche de forma id paper + distanta la care se afla.
+
+
+----------------------------------------------------------------------------
+
+GET_ERDOS_DISTANCE:
+	Pentru acest task am preprocesat in add paper graful de autori: Avem Hashtable ul cu rbt care pentru ficare id de autor tine o lista cu autorii cu care a publicat.
+	De observat este ca am utilizat Hashtable visited si distance(implementate simplu, nu cu rbt) si am marcat drumul cu o variabila statica(static int viz).
+	DISCLAIMER! Suntem contienti ca in realitate nu ar fi o idee buna, insa din cauza unui bug la listele inlantuite pierdeam mult timp si nu stiam de ce. De aceea am ales sa schimbam abordarea in care eliberam visited cu aceasta implementare, sperand la un timp mai bun.
+
+
+---------------------------------------------------------------------------------------
+
+GET_MOST_CITED_PAPERS_BY_FIELD:
+	La acest task retinem intr un Hashtable la ficare field id urile paper urilor continute(in add_paper)
+	Dupa care in functie, pentru field ul respectiv, parcurg id urile si facem heap sort. Avem structura art_t care poate retine : {titlu, an, id, nr de citatii} - pe baza ei e implementat heap-ul.
+
+
+-----------------------------------------------------------------------------------------------
+
+
+GET_NUMBER_OF_ARTICLES_BETWEEN_DATES:
+	Rezolvarea consta intr un vector de frecvente year_fq, unde retinem aparitiile fiecarui an.
+Dupa in functie facem suma tututor aparitiilor anilor din intervalul dat.
+	Din cauza bug ului la liste incercasem o imbunatatire cu arbori de intervale, insa dupa rezolvare am observat ca intra si cu solutia simpluta.
+
+--------------------------------------------------------------------------------------------------
+
+GET_NUMBER_OF_AUTHORS_WITH_FIELD:
+	Folosesc structura de Hashtable utilizata anterior : Hashtable ul pe field.
+	Rezolvarea nu are nimic iesit din comun. Pur si simplu parcurgem toate paper urile din field si numaram autorii care sunt din institutia respectiva, cu atentie sa nu se repete.
+	Pentru repetare folosesc o lista inlantuita in care tinem minte autorii curenti.
+	Se putea si mai eficient, stim.
+
+-------------------------------------------------------------------------------------------------
+
+
+GET_HISTOGRAM_OF_CITATIONS:
+	Retin intr un Hashtable pentru fiecare autor o lista inlantuita id urile paper urilor publicate. 
+	In functie parcurg lista si cu ajutorul Hashtable ului referenced_by aflu instant de cate ori a fost paperul citat si updatez histograma.
+
+
+--------------------------------------------------------------------------------------------------
+
+GET_READING_ORDER:
+	Aici am parcurs initial cu un bfs pana in nodurile terminale, pe care le am retinut intr un heap dupa ordonarea precizata in enunt. Am marcat nodurile prin care am trecut.
+	Dupa algoritmul este urmatorul: - luam primul nod din heap si il punem la raspunsuri. Dupa care ne ducem pe graful inversat in cele care l au citat si daca gasesim unul care nu mai citeaza niciun alt nod din heap (nu mai depinde de nimeni) il adaugam in heap si repetam procesul.
+	In termeni mai cizelati, folosim o sortare topologica pe baza algoritmului lui Kuhn din nodurile terminale si ajutandu ne de o coada de prioritati.
+
+
+--------------------------------------------------------------------------------------------------
+
+FIND_BEST_COORDINATOR:
+	Aici parcurgem bfs pe graful de autori din id ul dat, pana la o distanta erdos de maxim 5 si calculam cel mai bun scor. E ceva ce ne scapa din moment ce nu trecem testul 1  si 2.
