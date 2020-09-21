@@ -20,7 +20,7 @@ GET_OLDEST_INFLUENCE:
 	Functia care se ocupa de updatat este update, prin care se parcurge cu ajutorul lui referenced_by graful inversat pornind dintr un id dat. Algoritm de tip BFS.
 
 	DE CE ? 
-		- Trade off ul se merita intrucat avem O(1) pe querry ul de get_oldest influence
+		- Trade off ul merita intrucat avem O(1) pe querry ul de get_oldest influence
 		- Nu ne ducem orbeste, alegem sa updatam doar cand avem solutii mai bune.
 
 -----------------------------------------------------------------------
